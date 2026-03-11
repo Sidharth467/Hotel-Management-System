@@ -13,6 +13,10 @@ import AdminRooms from "./pages/AdminRooms";
 import AdminBookings from "./pages/AdminBookings";
 import BookingSummary from "./pages/BookingSummary";
 import MyBookings from "./pages/MyBookings";
+import Profile from "./pages/Profile"
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
+
 
 function App() {
   return (
@@ -32,8 +36,17 @@ function App() {
           }
         >
           <Route path="dashboard" element={<Dashboard />} />
+            <Route
+          path="/profile"
+          element={
+            <ProtectedRoute>
+              <Profile />
+            </ProtectedRoute>
+          }
+        />
           <Route path="booking" element={<Booking />} />
           <Route path="my-bookings" element={<MyBookings />} />
+
         </Route>
         <Route
           path="/booking-summary"
@@ -55,6 +68,7 @@ function App() {
   <Route index element={<AdminDashboard />} />
   <Route path="rooms" element={<AdminRooms />} />
   <Route path="bookings" element={<AdminBookings />} />
+
 </Route>
       </Routes>
     </BrowserRouter>

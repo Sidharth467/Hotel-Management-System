@@ -17,6 +17,7 @@ export default function BookingSummary() {
   const nights = Math.ceil((checkOut - checkIn) / (1000 * 60 * 60 * 24));
 
   const totalPrice = nights * Number(room.price_per_night) * guests;
+  
 
   const handleConfirm = async () => {
 
@@ -40,12 +41,12 @@ export default function BookingSummary() {
 
     alert("Booking Confirmed!");
 
-    navigate("/dashboard");
+    navigate("/my-bookings");
 
   };
 
   return (
-
+   <div className="admin-dashboard">
     <div className="booking-summary">
       
 
@@ -120,6 +121,7 @@ export default function BookingSummary() {
 </div>
       </div>
 
+    </div>
     </div>
   );
 }

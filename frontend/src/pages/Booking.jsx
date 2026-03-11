@@ -4,6 +4,10 @@ import { FaWifi, FaTv, FaSnowflake, FaCar, FaCoffee, FaDoorOpen } from "react-ic
 import "react-date-range/dist/styles.css";
 import "react-date-range/dist/theme/default.css";
 import { useNavigate } from "react-router-dom";
+import SliderModule from "react-slick";
+const Slider = SliderModule.default;
+import "slick-carousel/slick/slick.css";
+import "slick-carousel/slick/slick-theme.css";
 
 export default function Booking() {
 
@@ -12,6 +16,13 @@ export default function Booking() {
   const [guests, setGuests] = useState(1);
   const [error, setError] = useState("");
   const navigate = useNavigate();
+  const settings = {
+  dots: true,
+  infinite: true,
+  speed: 500,
+  slidesToShow: 1,
+  slidesToScroll: 1
+};
   const amenityIcons = {
   WiFi: <FaWifi />,
   AC: <FaSnowflake />,
@@ -110,11 +121,25 @@ const handleBooking = () => {
 
           <div className="modal-card">
 
-            <img
-              src={`http://127.0.0.1:8000${selectedRoom.image}`}
-              alt="room"
-            />
-
+  <Slider {...settings}>
+  {selectedRoom.images?.length > 0 ? (
+    selectedRoom.images.map((img, index) => (
+      <div key={index}>
+        <img
+          src={`http://127.0.0.1:8000${img.image}`}
+          className="modal-carousel-img"
+        />
+      </div>
+    ))
+  ) : (
+    <div>
+      <img
+        src={`http://127.0.0.1:8000${selectedRoom.image}`}
+        className="modal-carousel-img"
+      />
+    </div>
+  )}
+</Slider>
             <h2>{selectedRoom.room_type}</h2>
             <p>{selectedRoom.description}</p>
             <div className="modal-amenities">
@@ -193,7 +218,8 @@ const handleBooking = () => {
               <p className="booking-error">{error}</p>
             )}
 
-            <button onClick={handleBooking}>Book Now</button>
+            <button onClick={handleBooking}
+            disabled={selectedRoom.available_rooms === 0} >Book Now</button>
 
             <button
               className="close-btn"

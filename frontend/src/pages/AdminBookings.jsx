@@ -29,6 +29,7 @@ export default function AdminBookings() {
 
   return (
     <>
+     <div className="admin-dashboard">
       <h2>Manage Bookings</h2>
 
      {bookings.map((booking) => (
@@ -55,7 +56,7 @@ export default function AdminBookings() {
     </div>
 
     <button onClick={() => updateStatus(booking.id, "completed")}>
-      Complete
+      Checkout
     </button>
 
     <button onClick={() => updateStatus(booking.id, "cancelled")}>
@@ -63,8 +64,10 @@ export default function AdminBookings() {
     </button>
 
   </div>
+ 
 
-))}
+))} 
+</div>
     </>
   );
 }
