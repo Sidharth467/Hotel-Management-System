@@ -2,12 +2,13 @@ from rest_framework.decorators import api_view, permission_classes
 from rest_framework.response import Response
 from rest_framework import status, permissions
 from rest_framework.permissions import IsAuthenticated
-from .serializers import RoomSerializer, BookingSerializer,AmenitySerializer
+from .serializers import RoomSerializer, BookingSerializer,AmenitySerializer,RoomImage
 from .models import Room, Booking,Amenity
 from rest_framework.exceptions import PermissionDenied
 from django.shortcuts import get_object_or_404
 from datetime import datetime
-
+from rest_framework.permissions import AllowAny
+from django.db.models import Q,Sum
 
 
 def admin_required(user):
@@ -16,10 +17,37 @@ def admin_required(user):
 
 
 @api_view(["GET"])
+@permission_classes([AllowAny])
 def list_available_rooms(request):
-    rooms = Room.objects.filter(is_available=True)
-    serializer = RoomSerializer(rooms, many=True)
-    return Response(serializer.data, status=status.HTTP_200_OK)
+
+    rooms = Room.objects.all()
+
+    data = []
+
+    for room in rooms:
+
+        # Count active bookings
+        booked_rooms = Booking.objects.filter(
+            room=room,
+            status="booked",
+            check_out_date__gte=datetime.today()    
+        ).count()
+        print("ROOM:", room.id)
+        print("TOTAL:", room.total_rooms)
+        print("BOOKED:", booked_rooms)
+
+        # Calculate available rooms
+        available_rooms = room.total_rooms - booked_rooms
+
+        serializer = RoomSerializer(room)
+
+        room_data = serializer.data
+        room_data["available_rooms"] = max(available_rooms, 0)
+
+        data.append(room_data)
+
+    return Response(data, status=status.HTTP_200_OK)
+
 
 
 
@@ -28,8 +56,6 @@ def list_available_rooms(request):
 def create_booking(request):
 
     user = request.user
-    print(request.headers)
-    print("USER:", request.user)
 
     room_id = request.data.get("room")
     check_in = request.data.get("check_in_date")
@@ -40,11 +66,31 @@ def create_booking(request):
 
     from datetime import datetime
 
-    if not check_in or not check_out:
-        return Response({"error": "Dates are required"}, status=400)
-
     check_in_date = datetime.strptime(check_in, "%Y-%m-%d").date()
     check_out_date = datetime.strptime(check_out, "%Y-%m-%d").date()
+
+    # Find overlapping bookings
+    booked_rooms = Booking.objects.filter(
+        room=room,
+        status="booked"
+    ).filter(
+        Q(check_in_date__lt=check_out_date) &
+        Q(check_out_date__gt=check_in_date)
+    ).count()
+    available_rooms = room.total_rooms - booked_rooms
+    if available_rooms <= 0:
+        return Response(
+            {"error": "No rooms available"},
+            status=400
+        )
+
+    available_rooms = room.total_rooms - booked_rooms
+
+    if available_rooms <= 0:
+        return Response(
+            {"error": "No rooms available for selected dates"},
+            status=400
+        )
 
     nights = (check_out_date - check_in_date).days
 
@@ -61,11 +107,13 @@ def create_booking(request):
 
     return Response({"message": "Booking successful"})
 
+
+
 @api_view(["GET"])
 @permission_classes([IsAuthenticated])
 def my_bookings(request):
 
-    bookings = Booking.objects.filter(user=request.user)
+    bookings = Booking.objects.filter(user=request.user).order_by("-created_at")
 
     serializer = BookingSerializer(bookings, many=True)
 
@@ -94,6 +142,23 @@ def add_room(request):
         return Response(serializer.data)
 
     return Response(serializer.errors, status=400)
+
+
+@api_view(["POST"])
+@permission_classes([IsAuthenticated])
+def upload_room_images(request, room_id):
+
+    admin_required(request.user)
+
+    room = get_object_or_404(Room, id=room_id)
+
+    images = request.FILES.getlist("images")
+
+    for img in images:
+        RoomImage.objects.create(room=room, image=img)
+
+    return Response({"message": "Images uploaded"})
+
 
 @api_view(["PATCH"])
 @permission_classes([IsAuthenticated])
@@ -132,8 +197,27 @@ def list_all_rooms(request):
     admin_required(request.user)
 
     rooms = Room.objects.all()
-    serializer = RoomSerializer(rooms, many=True)
-    return Response(serializer.data)
+
+    data = []
+
+    for room in rooms:
+
+        booked = Booking.objects.filter(
+            room=room,
+            status="booked"
+        ).count()
+
+        available = room.total_rooms - booked
+
+        serializer = RoomSerializer(room)
+
+        room_data = serializer.data
+        room_data["available_rooms"] = max(available, 0)
+
+        data.append(room_data)
+
+    return Response(data)
+
 
 @api_view(["GET"])
 def list_amenities(request):
@@ -174,6 +258,8 @@ def update_room(request, id):
 
     try:
         room = Room.objects.get(id=id)
+        data = request.data.copy()
+        amenities = request.data.getlist("amenities_ids[]")    
     except Room.DoesNotExist:
         return Response({"error": "Room not found"}, status=404)
 
@@ -181,6 +267,10 @@ def update_room(request, id):
 
     if serializer.is_valid():
         serializer.save()
+
+        if amenities:
+            room.amenities.set(amenities)
+
         return Response(serializer.data)
 
     return Response(serializer.errors, status=400)
@@ -240,3 +330,24 @@ def update_booking_status(request, id):
     booking.save()
 
     return Response({"message": "Booking updated"})
+
+
+@api_view(["GET"])
+@permission_classes([IsAuthenticated])
+def admin_dashboard(request):
+
+    admin_required(request.user)
+
+    total_rooms = Room.objects.count()
+
+    active_bookings = Booking.objects.filter(status="booked").count()
+
+    revenue = Booking.objects.filter(
+        status="completed"
+    ).aggregate(total=Sum("total_price"))["total"] or 0
+
+    return Response({
+        "total_rooms": total_rooms,
+        "active_bookings": active_bookings,
+        "total_revenue": revenue
+    })

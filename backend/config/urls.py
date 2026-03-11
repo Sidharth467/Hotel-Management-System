@@ -26,4 +26,5 @@ urlpatterns = [
     path('api/register/', RegisterView.as_view()),
     path('api/login/', CustomTokenObtainPairView.as_view()),
     path("api/", include("bookings.urls")),
+    path("api/", include("accounts.urls"))
 ] + static(settings.MEDIA_URL, document_root=settings.MEDIA_ROOT)

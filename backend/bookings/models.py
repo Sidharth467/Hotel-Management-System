@@ -19,6 +19,7 @@ class Room(models.Model):
     room_number = models.CharField(max_length=10, unique=True)
     room_type = models.CharField(max_length=20, choices=ROOM_TYPES)
     price_per_night = models.DecimalField(max_digits=10, decimal_places=2)
+    total_rooms = models.IntegerField(default=1) 
     is_available = models.BooleanField(default=True)
     description = models.TextField(blank=True)
     amenities = models.ManyToManyField(Amenity, blank=True)
@@ -46,4 +47,15 @@ class Booking(models.Model):
 
     def __str__(self):
         return f"{self.user.username} - {self.room.room_number}"
+    
+
+class RoomImage(models.Model):
+
+    room = models.ForeignKey(
+        Room,
+        related_name="images",
+        on_delete=models.CASCADE
+    )
+
+    image = models.ImageField(upload_to="rooms/")
     
