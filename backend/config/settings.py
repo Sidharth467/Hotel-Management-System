@@ -32,6 +32,11 @@ ALLOWED_HOSTS = [
     ".onrender.com"
 ]
 
+from corsheaders.defaults import default_headers
+
+CORS_ALLOW_HEADERS = list(default_headers) + [
+    "authorization",
+]
 
 # Application definition
 
@@ -63,7 +68,7 @@ MIDDLEWARE = [
 CORS_ALLOW_ALL_ORIGINS = True
 
 CSRF_TRUSTED_ORIGINS = [
-    "https://hotel-management-system-eny5uit3s-sidharth-ss-projects-950e9fa1.vercel.app/"
+    "https://hotel-management-system-eny5uit3s-sidharth-ss-projects-950e9fa1.vercel.app"
 ]
 
 
