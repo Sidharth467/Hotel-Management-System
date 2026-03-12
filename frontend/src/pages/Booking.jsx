@@ -89,7 +89,7 @@ const handleBooking = () => {
           >
 
                     <img
-          src={`http://127.0.0.1:8000${room.image}`}
+          src={`https://hotel-management-system-boy7.onrender.com${room.image}`}
           alt="room"
           className="room-image"
         />
@@ -126,7 +126,7 @@ const handleBooking = () => {
     selectedRoom.images.map((img, index) => (
       <div key={index}>
         <img
-          src={`http://127.0.0.1:8000${img.image}`}
+          src={`https://hotel-management-system-boy7.onrender.com${img.image}`}
           className="modal-carousel-img"
         />
       </div>
@@ -134,7 +134,7 @@ const handleBooking = () => {
   ) : (
     <div>
       <img
-        src={`http://127.0.0.1:8000${selectedRoom.image}`}
+        src={`https://hotel-management-system-boy7.onrender.com${selectedRoom.image}`}
         className="modal-carousel-img"
       />
     </div>

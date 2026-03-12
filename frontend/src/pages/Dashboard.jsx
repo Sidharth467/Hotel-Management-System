@@ -83,7 +83,7 @@ export default function Dashboard() {
           <div className="booking-card">
 
             <img
-              src={`http://127.0.0.1:8000${latestBooking.room.image}`}
+              src={`https://hotel-management-system-boy7.onrender.com${latestBooking.room.image}`}
               alt="room"
             />
 

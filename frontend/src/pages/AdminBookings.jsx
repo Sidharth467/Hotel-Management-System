@@ -37,7 +37,7 @@ export default function AdminBookings() {
   <div key={booking.id} className="admin-booking-row">
 
     <img
-      src={`http://127.0.0.1:8000${booking.room.image}`}
+      src={`https://hotel-management-system-boy7.onrender.com${booking.room.image}`}
       width="80"
     />
 

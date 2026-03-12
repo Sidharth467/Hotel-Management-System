@@ -51,7 +51,7 @@ export default function MyBookings() {
 
               <td>
                 <img
-                  src={`http://127.0.0.1:8000${booking.room.image}`}
+                  src={`https://hotel-management-system-boy7.onrender.com${booking.room.image}`}
                   className="table-room-img"
                 />
               </td>

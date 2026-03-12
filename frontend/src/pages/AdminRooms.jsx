@@ -208,7 +208,7 @@ if (editingRoomId && roomData.images) {
           />
           {currentImage && (
             <img
-              src={`http://127.0.0.1:8000${currentImage}`}
+              src={`https://hotel-management-system-boy7.onrender.com${currentImage}`}
               style={{
                 width: "120px",
                 height: "80px",
@@ -278,7 +278,7 @@ if (editingRoomId && roomData.images) {
 
     {room.image && (
       <img
-        src={`http://127.0.0.1:8000${room.image}`}
+        src={`https://hotel-management-system-boy7.onrender.com${room.image}`}
         alt="room"
         style={{
           width: "80px",

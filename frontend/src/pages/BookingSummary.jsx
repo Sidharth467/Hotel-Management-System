@@ -53,7 +53,7 @@ export default function BookingSummary() {
       <div className="summary-card">
 
         <img
-          src={`http://127.0.0.1:8000${room.image}`}
+          src={`https://hotel-management-system-boy7.onrender.com${room.image}`}
           className="summary-image"
         />
 
