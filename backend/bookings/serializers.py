@@ -13,7 +13,6 @@ class RoomImageSerializer(serializers.ModelSerializer):
 class RoomSerializer(serializers.ModelSerializer):
 
     amenities = serializers.StringRelatedField(many=True, read_only=True)
-    images = RoomImageSerializer(many=True, read_only=True)
 
     amenities_ids = serializers.PrimaryKeyRelatedField(
         many=True,
