@@ -81,7 +81,7 @@ const saveRoom = async () => {
   }
 
   roomData.amenities.forEach(id => {
-    formData.append("amenities_ids[]", id);
+    formData.append("amenities_ids", id);
   });
 
   if (editingRoomId) {
