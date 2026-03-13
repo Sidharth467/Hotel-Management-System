@@ -125,20 +125,10 @@ def my_bookings(request):
 @permission_classes([IsAuthenticated])
 def add_room(request):
 
-    data = request.data.copy()
-
-    # convert amenities_ids[] → amenities_ids
-    amenities = data.getlist("amenities_ids[]")
-
-    if amenities:
-        data.setlist("amenities_ids", amenities)
-
-    serializer = RoomSerializer(data=data)
+    serializer = RoomSerializer(data=request.data)
 
     if serializer.is_valid():
-
         room = serializer.save()
-
         return Response(serializer.data)
 
     return Response(serializer.errors, status=400)
