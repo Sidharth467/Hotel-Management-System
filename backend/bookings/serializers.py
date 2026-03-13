@@ -30,7 +30,6 @@ class RoomSerializer(serializers.ModelSerializer):
             "price_per_night",
             "description",
             "image",
-            "images",
             "is_available",
             "amenities",
             "amenities_ids",

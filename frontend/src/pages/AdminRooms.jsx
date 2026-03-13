@@ -75,40 +75,14 @@ const saveRoom = async () => {
   formData.append("room_type", roomData.room_type);
   formData.append("price_per_night", roomData.price_per_night);
   formData.append("total_rooms", roomData.total_rooms);
-  if (roomData.image && !roomData.image.length) {
-  formData.append("image", roomData.image);
-}
+
+  if (roomData.image) {
+    formData.append("image", roomData.image);
+  }
 
   roomData.amenities.forEach(id => {
     formData.append("amenities_ids[]", id);
   });
-
-if (roomData.image && roomData.image.length) {
-  for (let i = 0; i < roomData.image.length; i++) {
-    formData.append("images", roomData.image[i]);
-  }
-}
-
-if (editingRoomId && roomData.images) {
-
-  const imageForm = new FormData();
-
-  for (let i = 0; i < roomData.images.length; i++) {
-    imageForm.append("images", roomData.images[i]);
-  }
-
-  await API.post(
-    `admin/upload-room-images/${editingRoomId}/`,
-    imageForm,
-    {
-      headers: {
-        Authorization: `Bearer ${token}`,
-        "Content-Type": "multipart/form-data"
-      }
-    }
-  );
-
-}
 
   if (editingRoomId) {
 
@@ -148,9 +122,9 @@ if (editingRoomId && roomData.images) {
     amenities: [],
     image: null
   });
+  setCurrentImage(null);
 
   fetchRooms();
-
 };
 
   const toggleAvailability = async (id) => {
@@ -219,9 +193,8 @@ if (editingRoomId && roomData.images) {
           )}
           <input
           type="file"
-          multiple
           onChange={(e) =>
-            setRoomData({ ...roomData, image: e.target.files })
+            setRoomData({ ...roomData, image: e.target.files[0] })
     }
   />
       <input
